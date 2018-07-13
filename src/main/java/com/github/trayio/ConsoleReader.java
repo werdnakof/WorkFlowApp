@@ -10,7 +10,7 @@ public class ConsoleReader  {
             Scanner scanner = new Scanner(System.in);
             while (!emitter.isDisposed()) {
                 String text = scanner.nextLine();
-                emitter.onNext(new ConsoleEvent(text));
+                if(text != null) emitter.onNext(new ConsoleEvent(text));
             }
             scanner.close();
         });

@@ -3,12 +3,15 @@ package com.github.trayio;
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.schedulers.Schedulers;
+import java.util.logging.Logger;
 
 public class Transformers {
 
     public static ObservableTransformer<ConsoleEvent, WorkFlow> getWorkFlow() {
-        return event -> event.concatMap(e -> {
-            return WorkFlow.get(e.getContent()).create();
+        return event -> event.flatMap(e -> {
+            return WorkFlowReader.get(e.getContent())
+                    .filter(wf -> wf.tasks.size() != 0)
+                    .subscribeOn(Schedulers.io());
         });
     }
 
@@ -18,7 +21,7 @@ public class Transformers {
                 .subscribeOn(Schedulers.io());
     }
 
-    public static ObservableTransformer<WorkFlowExecution, WorkFlowExecution> saveWorkFlowExcution() {
+    public static ObservableTransformer<WorkFlowExecution, WorkFlowExecution> saveWorkFlowExecution() {
         return workFlowExecution -> workFlowExecution
                 .doOnNext(wfe -> DBService.getInstance().write(wfe))
                 .subscribeOn(Schedulers.io());
@@ -28,7 +31,7 @@ public class Transformers {
         return workflow -> workflow.concatMap(wf -> {
             return Observable.fromIterable(wf.getTasks()).concatMap(task -> {
                 return Observable.just(new WorkFlowExecution(wf, task))
-                        .compose(saveWorkFlowExcution());
+                        .compose(saveWorkFlowExecution());
             });
         });
     }

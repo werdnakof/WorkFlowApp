@@ -2,14 +2,15 @@ package com.github.trayio;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class TestWorkFlow {
     @Test
-    public void dummytest() {
-        WorkFlow wf = new WorkFlow(1, 0, new ArrayList<>());
-        assertTrue(wf.tasks.size() == 0);
+    public void test_readJson() {
+        WorkFlow expected = new WorkFlow(3, Arrays.asList(0, 1, 2));
+        WorkFlow result = WorkFlowReader.get("test.json").blockingFirst();
+        assertEquals(expected, result);
     }
 }

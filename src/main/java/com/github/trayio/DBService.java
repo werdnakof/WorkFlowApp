@@ -1,5 +1,9 @@
 package com.github.trayio;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -10,32 +14,46 @@ public class DBService implements DataBaseService {
 
     private final static Logger logger = Logger.getLogger(DBService.class.getName());
 
-    private AtomicInteger workflowCounter = new AtomicInteger(1);
-    private AtomicInteger executionCounter = new AtomicInteger(1);
+    private AtomicInteger workflowCounter = new AtomicInteger(0);
+    private AtomicInteger executionCounter = new AtomicInteger(0);
 
     private static DBService instance;
     private ConcurrentHashMap<Integer, WorkFlow> workflows;
     private ConcurrentHashMap<Integer, WorkFlowExecution> executions;
+
+    public static void log(String entry) {
+        String log = "writing: " + entry + " on Thread:" + Thread.currentThread().getName() + "\n";
+        logger.log(Level.INFO, log);
+
+        try {
+            Files.write(Paths.get("log.txt"), log.getBytes(), StandardOpenOption.APPEND);
+        }catch (IOException e) {
+            //exception handling left as an exercise for the reader
+        }
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     private DBService() {
         workflows = new ConcurrentHashMap<>();
         executions = new ConcurrentHashMap<>();
     }
 
-    public synchronized Boolean write(WorkFlow wf) {
-        if(workflows.contains(wf.getId())) return false;
-        logger.log(Level.INFO, "writing: " + wf);
+    public synchronized void write(WorkFlow wf) {
+        wf.setId(workflowCounter.getAndIncrement());
         workflows.putIfAbsent(wf.getId(), wf);
-        return true;
+        log(wf.toString());
     }
 
-    public synchronized Boolean write(WorkFlowExecution wfe) {
+    public synchronized void write(WorkFlowExecution wfe) {
         wfe.setDate(new Date());
-        if(wfe.getId() == null) wfe.setId(executionCounter.getAndIncrement());
-        if(executions.contains(wfe.getId())) return false;
-        logger.log(Level.INFO, "writing: " + wfe);
+        wfe.setId(executionCounter.getAndIncrement());
         executions.putIfAbsent(wfe.getId(), wfe);
-        return true;
+        log(wfe.toString());
     }
 
     @Override
