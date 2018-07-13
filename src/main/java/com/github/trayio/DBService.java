@@ -10,31 +10,42 @@ public class DBService implements DataBaseService {
 
     private final static Logger logger = Logger.getLogger(DBService.class.getName());
 
-    private AtomicInteger workflowCounter = new AtomicInteger(0);
-    private AtomicInteger excutionCounter = new AtomicInteger(0);
+    private AtomicInteger workflowCounter = new AtomicInteger(1);
+    private AtomicInteger executionCounter = new AtomicInteger(1);
 
     private static DBService instance;
     private ConcurrentHashMap<Integer, WorkFlow> workflows;
-    private ConcurrentHashMap<Integer, WorkFlowExecution> excutions;
+    private ConcurrentHashMap<Integer, WorkFlowExecution> executions;
 
     private DBService() {
         workflows = new ConcurrentHashMap<>();
-        excutions = new ConcurrentHashMap<>();
+        executions = new ConcurrentHashMap<>();
     }
 
-    public Boolean write(WorkFlow wf) {
-        logger.log(Level.INFO, "writing: " + wf);
+    public synchronized Boolean write(WorkFlow wf) {
         if(workflows.contains(wf.getId())) return false;
+        logger.log(Level.INFO, "writing: " + wf);
         workflows.putIfAbsent(wf.getId(), wf);
         return true;
     }
 
-    public Boolean write(WorkFlowExecution wfe) {
+    public synchronized Boolean write(WorkFlowExecution wfe) {
         wfe.setDate(new Date());
+        if(wfe.getId() == null) wfe.setId(executionCounter.getAndIncrement());
+        if(executions.contains(wfe.getId())) return false;
         logger.log(Level.INFO, "writing: " + wfe);
-        if(excutions.contains(wfe.getId())) return false;
-        excutions.putIfAbsent(wfe.getId(), wfe);
+        executions.putIfAbsent(wfe.getId(), wfe);
         return true;
+    }
+
+    @Override
+    public WorkFlow getWorkFlow(Integer id) {
+        return workflows.getOrDefault(id, null);
+    }
+
+    @Override
+    public WorkFlowExecution getWorkFlowExecution(Integer id) {
+        return executions.getOrDefault(id, null);
     }
 
     public static synchronized DBService getInstance() {
