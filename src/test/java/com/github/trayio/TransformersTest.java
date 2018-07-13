@@ -6,9 +6,7 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
-
 import io.reactivex.Observable;
-
 import static com.github.trayio.Transformers.*;
 import static org.junit.Assert.assertEquals;
 
@@ -37,6 +35,7 @@ public class TransformersTest {
         TestObserver<WorkFlow> testObserver = Observable.just(expected)
                 .compose(saveWorkFlow())
                 .test();
+
         testObserver.awaitTerminalEvent();
         testObserver.assertValue(expected);
 
@@ -44,28 +43,32 @@ public class TransformersTest {
     }
 
     @Test
-    public void test_saveWorkFlowExecution_sync() {
+    public void test_saveWorkFlowExecution_1() {
         List<Integer> steps = Arrays.asList(1, 2, 3);
         WorkFlow wf = new WorkFlow(1, 3, steps);
 
         WorkFlowExecution wfe1 = new WorkFlowExecution(wf, 0);
-        Observable<WorkFlowExecution> ob = Observable.just(wfe1);
+        TestObserver<WorkFlowExecution> wfes1 = Observable.just(wfe1)
+                .compose(saveWorkFlowExcution())
+                .test();
 
-        ob.compose(saveWorkFlowExcution()).test().assertValue(wfe1);
-        assertEquals(wfe1, DBService.getInstance().getWorkFlowExecution(0));
+        wfes1.awaitTerminalEvent();
+        wfes1.assertValue(wfe1);
+
+        assertEquals(wfe1, DBService.getInstance().getWorkFlowExecution(1));
 
         WorkFlowExecution wfe2 = new WorkFlowExecution(wf, 1);
-
-        Observable.just(wfe2)
+        TestObserver<WorkFlowExecution> wfes2 = Observable.just(wfe2)
                 .compose(saveWorkFlowExcution())
-                .test()
-                .assertValue(wfe2);
+                .test();
 
-        assertEquals(wfe2, DBService.getInstance().getWorkFlowExecution(1));
+        wfes2.awaitTerminalEvent();
+        wfes2.assertValue(wfe2);
+        assertEquals(wfe2, DBService.getInstance().getWorkFlowExecution(2));
     }
 
     @Test
-    public void test_saveWorkFlowExecution_async() {
+    public void test_saveWorkFlowExecution_2() {
         List<Integer> steps = Arrays.asList(1, 2, 3);
         WorkFlow wf = new WorkFlow(1, 3, steps);
 
