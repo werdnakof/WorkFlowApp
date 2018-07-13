@@ -1,11 +1,12 @@
 package com.github.trayio;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class WorkFlowExecution {
-    private int id;
+    private Integer id;
     private WorkFlow workflow;
-    private int currentStep;
+    private Integer currentStep;
     private Date date;
 
     public WorkFlowExecution(WorkFlow workflow, int currentStep) {
@@ -13,7 +14,13 @@ public class WorkFlowExecution {
         this.currentStep = currentStep;
     }
 
-    public int getId() {
+    public WorkFlowExecution(Integer id, WorkFlow workflow, Integer currentStep) {
+        this.id = id;
+        this.workflow = workflow;
+        this.currentStep = currentStep;
+    }
+
+    public Integer getId() {
         return id;
     }
 
@@ -21,11 +28,11 @@ public class WorkFlowExecution {
         return workflow;
     }
 
-    public int getCurrentStep() {
+    public Integer getCurrentStep() {
         return currentStep;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -45,5 +52,21 @@ public class WorkFlowExecution {
                 ", currentStep=" + currentStep +
                 ", date=" + date +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        WorkFlowExecution that = (WorkFlowExecution) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(workflow, that.workflow) &&
+                Objects.equals(currentStep, that.currentStep);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, workflow, currentStep);
     }
 }

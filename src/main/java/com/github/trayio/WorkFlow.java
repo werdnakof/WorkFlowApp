@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.Objects;
 
 public class WorkFlow {
 
@@ -61,5 +62,21 @@ public class WorkFlow {
 
     public Observable<WorkFlow> create() {
         return Observable.just(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        WorkFlow workFlow = (WorkFlow) o;
+        return id == workFlow.id &&
+                steps == workFlow.steps &&
+                Objects.equals(tasks, workFlow.tasks);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, steps, tasks);
     }
 }
