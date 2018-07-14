@@ -21,7 +21,7 @@ public class DBService implements DataBaseService {
     private ConcurrentHashMap<Integer, WorkFlow> workflows;
     private ConcurrentHashMap<Integer, WorkFlowExecution> executions;
 
-    public static void log(String entry) {
+    public static void log(String entry, boolean addDelay) {
         String log = "writing: " + entry + " on Thread:" + Thread.currentThread().getName() + "\n";
         logger.log(Level.INFO, log);
 
@@ -31,10 +31,12 @@ public class DBService implements DataBaseService {
             //exception handling left as an exercise for the reader
         }
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        if(addDelay) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -46,14 +48,23 @@ public class DBService implements DataBaseService {
     public synchronized void write(WorkFlow wf) {
         wf.setId(workflowCounter.getAndIncrement());
         workflows.putIfAbsent(wf.getId(), wf);
-        log(wf.toString());
+        log(wf.toString(), true);
     }
 
     public synchronized void write(WorkFlowExecution wfe) {
-        wfe.setDate(new Date());
+        wfe.setCreated(new Date());
         wfe.setId(executionCounter.getAndIncrement());
         executions.putIfAbsent(wfe.getId(), wfe);
-        log(wfe.toString());
+        log(wfe.toString(), true);
+    }
+
+    public synchronized void updateStatus(Integer id, WorkFlowExecution.State state) {
+        WorkFlowExecution w = executions.getOrDefault(id, null);
+
+        if(w != null) {
+            w.setState(state);
+            log(w.toString(), true);
+        }
     }
 
     @Override
