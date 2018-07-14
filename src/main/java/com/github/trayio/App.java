@@ -11,7 +11,7 @@ public class App {
         ConsoleReader.create()
             .compose(getWorkFlow())
             .compose(saveWorkFlow())
-            .compose(execute())
+            .compose(start())
             .subscribeOn(Schedulers.io())
             .blockingSubscribe();
     }

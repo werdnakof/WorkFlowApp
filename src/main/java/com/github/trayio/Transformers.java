@@ -3,20 +3,22 @@ package com.github.trayio;
 import io.reactivex.Observable;
 import io.reactivex.ObservableTransformer;
 import io.reactivex.schedulers.Schedulers;
-import java.util.logging.Logger;
+
+import static com.github.trayio.WorkFlowExecution.State.COMPLETED;
+import static com.github.trayio.WorkFlowExecution.State.ERROR;
 
 public class Transformers {
 
     public static ObservableTransformer<ConsoleEvent, WorkFlow> getWorkFlow() {
         return event -> event.flatMap(e -> {
             return WorkFlowReader.get(e.getContent())
-                    .filter(wf -> wf.tasks.size() != 0)
+                    .filter(wf -> wf.getTasks().size() != 0)
                     .subscribeOn(Schedulers.io());
         });
     }
 
     public static ObservableTransformer<WorkFlow, WorkFlow> saveWorkFlow() {
-        return workFlowObservable -> workFlowObservable
+        return workFlow -> workFlow
                 .doOnNext(wf -> DBService.getInstance().write(wf))
                 .subscribeOn(Schedulers.io());
     }
@@ -27,16 +29,31 @@ public class Transformers {
                 .subscribeOn(Schedulers.io());
     }
 
-    public static ObservableTransformer<WorkFlow, WorkFlowExecution> nextSteps() {
-        return workflow -> workflow.concatMap(wf -> {
-            return Observable.fromIterable(wf.getTasks()).concatMap(task -> {
-                return Observable.just(new WorkFlowExecution(wf, task))
-                        .compose(saveWorkFlowExecution());
-            });
-        });
+    public static ObservableTransformer<Executor.Response, Executor.Response> updateWorkFlowExecution() {
+        return response -> response
+                .doOnNext(re -> {
+                        WorkFlowExecution.State state = re.isSuccess() ? COMPLETED : ERROR;
+                        DBService.getInstance().updateStatus(re.workFlowExecutionId, state);
+                    }
+                )
+                .subscribeOn(Schedulers.io());
     }
 
-    public static ObservableTransformer<WorkFlow, WorkFlowExecution> execute() {
-        return workflow -> workflow.compose(nextSteps());
+    public static ObservableTransformer<WorkFlowExecution, Executor.Response> execute() {
+        return workFlowExecution -> workFlowExecution
+                .concatMap(Executor::submit)
+                .subscribeOn(Schedulers.io());
+    }
+
+    public static ObservableTransformer<WorkFlow, Executor.Response> start() {
+        return workflow -> workflow.flatMap(wf -> {
+            return Observable
+                    .fromIterable(wf.getTasks())
+                    .concatMap(task -> WorkFlowExecution.create(wf, task)
+                        .compose(saveWorkFlowExecution())
+                    ).compose(execute())
+                    .takeUntil(Executor.Response::isFail)
+                    .compose(updateWorkFlowExecution());
+        });
     }
 }

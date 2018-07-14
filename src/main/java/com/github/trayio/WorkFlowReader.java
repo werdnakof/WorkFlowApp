@@ -8,7 +8,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +19,7 @@ public class WorkFlowReader {
     public static Observable<WorkFlow> get(String filePath) {
         Gson gson = new Gson();
         BufferedReader br = null;
-        WorkFlow wf = new WorkFlow(0, Arrays.asList());
+        WorkFlow wf = new WorkFlow("default", Collections.emptyList());
 
         try {
             br = new BufferedReader(new FileReader(filePath));
