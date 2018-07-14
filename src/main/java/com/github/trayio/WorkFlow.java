@@ -1,52 +1,42 @@
 package com.github.trayio;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import io.reactivex.Observable;
-
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 public class WorkFlow {
 
+    private int id;
+    private String name;
+    private List<Task> tasks;
 
-    public int id;
-    public int steps;
-    public List<Integer> tasks;
-
-    public WorkFlow(int id, int steps, List<Integer> tasks) {
+    public WorkFlow(int id, List<Task> tasks) {
         this.id = id;
-        this.steps = steps;
         this.tasks = tasks;
+        this.tasks.sort(Comparator.comparingInt(task -> task.step));
     }
 
-    public WorkFlow(int steps, List<Integer> tasks) {
-        this.steps = steps;
+    public WorkFlow(String name, List<Task> tasks) {
+        this.name = name;
         this.tasks = tasks;
+        this.tasks.sort(Comparator.comparingInt(task -> task.step));
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(int id) { this.id = id; }
+
+    public List<Task> getTasks() {
+        return tasks;
     }
 
     @Override
     public String toString() {
-        return "WF{id=" + id + ", steps=" + steps + '}';
-    }
-
-
-    public List<Integer> getTasks() {
-        return tasks;
+        return "WorkFlow{" +
+                "step=" + id +
+                ", tasks=" + tasks +
+                '}';
     }
 
     @Override
@@ -54,14 +44,15 @@ public class WorkFlow {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         WorkFlow workFlow = (WorkFlow) o;
+
         return id == workFlow.id &&
-                steps == workFlow.steps &&
+                Objects.equals(name, workFlow.name) &&
                 Objects.equals(tasks, workFlow.tasks);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, steps, tasks);
+        return Objects.hash(id, name, tasks);
     }
 }

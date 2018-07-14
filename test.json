@@ -1,5 +1,13 @@
 {
-  "id": 0,
-  "steps": 3,
-  "tasks": [0, 1, 2]
+  "name": "test",
+  "tasks": [
+    {
+      "step": 0,
+      "name": "step0"
+    },
+    {
+      "step": 1,
+      "name": "step1"
+    }
+  ]
 }
