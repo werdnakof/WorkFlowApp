@@ -43,8 +43,16 @@ public class Executor {
         }
     }
 
+    /**
+     * Start executing tasks e.g. call external api, save/read data to remote db
+     *
+     * If Task/WorkFlowExecution name is "force-error", then return Failure status
+     * (This is only for demonstration purposes, in reality any tasks not executed properly should return Failure status)
+     *
+     * @param wfe
+     * @return
+     */
     public static Observable<Response> submit(WorkFlowExecution wfe) {
-        // start tasks e.g. call external api, save/read data to remote db
         if(wfe.getName().matches("force-error")) {
             return Observable.just(new Response(wfe.getId(), Status.FAILURE));
         }

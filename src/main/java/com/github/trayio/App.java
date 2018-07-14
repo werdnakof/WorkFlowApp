@@ -6,7 +6,8 @@ import static com.github.trayio.Transformers.*;
 
 public class App {
     public static void main(String[] args) {
-        System.out.println("Enter full path of your WorkFlow json file in console:");
+        System.out.println("Enter full path of your WorkFlow json file in console: \n" +
+        "(see tasks/task1.json for example)");
 
         ConsoleReader.create()
             .compose(getWorkFlow())
