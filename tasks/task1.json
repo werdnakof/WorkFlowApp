@@ -1,0 +1,17 @@
+{
+  "name": "task-1",
+  "tasks": [
+    {
+      "step": 1,
+      "name": "collect something from something"
+    },
+    {
+      "step": 2,
+      "name": "do something with something"
+    },
+    {
+      "step": 3,
+      "name": "email something to someone"
+    }
+  ]
+}

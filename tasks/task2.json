@@ -1,0 +1,21 @@
+{
+  "name": "task-2",
+  "tasks": [
+    {
+      "step": 1,
+      "name": "collect something from someone"
+    },
+    {
+      "step": 2,
+      "name": "POST someone with something"
+    },
+    {
+      "step": 3,
+      "name": "force-error"
+    },
+    {
+      "step": 4,
+      "name": "slack something to group"
+    }
+  ]
+}
