@@ -6,7 +6,7 @@ __How to Run:__
 * Enter the path of your task, see example [here](https://github.com/werdnakof/WorkFlowApp/blob/master/tasks/task2.json)
 
 __Key Features:__
-* Utilises RxJava library to handle async and thread handling
+* Utilises RxJava library to handle async calls and thread handling
 * Publisher Subscriber pattern
 * Functional approach:
 	* Easier unit testing (simply testing for _objects going in and out_)
@@ -14,7 +14,7 @@ __Key Features:__
 
 Inspired by [Managing State with RxJava by Jake Wharton](https://www.youtube.com/watch?v=0IKHxjkgop4)
 
-__Classes Descriptions:__
+__Classes Overview:__
 * App - entry point, compose functions together
 * ConsoleReader - read console input emitt ConsoleEvent 
 * WorkFlow - data object for storing work flows, contain list of Task
@@ -35,6 +35,6 @@ __Classes Descriptions:__
 
 *__DB currently delays (sleeps) for 500 milli seconds for every save/update, to disable it either comment out Thread.sleep or set `addDelay` to false in DBService.java, and recompile a jar file__*
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTcxMTIxMjQwNCwtNDUzNzAwMzUwLC0xNT
-gwMzcwNzY5LDE0MzYzMzY0NDNdfQ==
+eyJoaXN0b3J5IjpbLTE2NzU4Njk4MjUsLTcxMTIxMjQwNCwtND
+UzNzAwMzUwLC0xNTgwMzcwNzY5LDE0MzYzMzY0NDNdfQ==
 -->
