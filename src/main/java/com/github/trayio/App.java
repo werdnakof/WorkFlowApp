@@ -10,6 +10,7 @@ public class App {
         "(see tasks/task1.json for example)");
 
         ConsoleReader.create()
+            .subscribeOn(Schedulers.io())
             .compose(getWorkFlow())
             .compose(saveWorkFlow())
             .compose(start())
