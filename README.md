@@ -9,7 +9,7 @@ __Key Features:__
 * Utilises RxJava library to handle async and thread handling
 * Publisher Subscriber pattern
 * Functional approach:
-	* Easier unit testing (only simply testing for _objects going in and out_)
+	* Easier unit testing (simply testing for _objects going in and out_)
 	* Side effects are contained in a single unit of function call.
 
 Inspired by [Managing State with RxJava by Jake Wharton](https://www.youtube.com/watch?v=0IKHxjkgop4)
@@ -35,6 +35,6 @@ __Classes Descriptions:__
 
 *__DB currently delays (sleeps) for 500 milli seconds for every save/update, to disable it either comment out Thread.sleep or set `addDelay` to false in DBService.java, and recompile a jar file__*
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbNDQyODQ2NDc2LC00NTM3MDAzNTAsLTE1OD
+eyJoaXN0b3J5IjpbOTI0MzMxNTA4LC00NTM3MDAzNTAsLTE1OD
 AzNzA3NjksMTQzNjMzNjQ0M119
 -->
