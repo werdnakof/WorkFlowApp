@@ -16,7 +16,7 @@ public class WorkFlowReader {
 
     private final static java.util.logging.Logger logger = Logger.getLogger(WorkFlowReader.class.getName());
 
-    public static Observable<WorkFlow> get(String filePath) {
+    public static WorkFlow get(String filePath) {
         Gson gson = new Gson();
         BufferedReader br = null;
         WorkFlow wf = new WorkFlow("default", Collections.emptyList());
@@ -38,6 +38,6 @@ public class WorkFlowReader {
             }
         }
 
-        return Observable.just(wf);
+        return wf;
     }
 }

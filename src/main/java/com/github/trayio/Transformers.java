@@ -10,8 +10,8 @@ import static com.github.trayio.WorkFlowExecution.State.ERROR;
 public class Transformers {
 
     public static ObservableTransformer<ConsoleEvent, WorkFlow> getWorkFlow() {
-        return event -> event.flatMap(e -> {
-            return WorkFlowReader.get(e.getContent())
+        return eventObs -> eventObs.flatMap(event -> {
+            return Observable.fromCallable(() -> WorkFlowReader.get(event.getContent()))
                     .filter(wf -> wf.getTasks().size() != 0)
                     .subscribeOn(Schedulers.io());
         });
@@ -46,10 +46,10 @@ public class Transformers {
     }
 
     public static ObservableTransformer<WorkFlow, Executor.Response> start() {
-        return workflow -> workflow.flatMap(wf -> {
+        return workflowObs -> workflowObs.flatMap(workflow -> {
             return Observable
-                    .fromIterable(wf.getTasks())
-                    .concatMap(task -> WorkFlowExecution.create(wf, task)
+                    .fromIterable(workflow.getTasks())
+                    .concatMap(task -> WorkFlowExecution.create(workflow, task)
                         .compose(saveWorkFlowExecution())
                     ).compose(execute())
                     .takeUntil(Executor.Response::isFail)
