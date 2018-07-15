@@ -34,8 +34,8 @@ public class WorkFlow {
     @Override
     public String toString() {
         return "WorkFlow{" +
-                "step=" + id +
-                ", tasks=" + tasks +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 '}';
     }
 

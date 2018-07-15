@@ -56,8 +56,8 @@ public class Transformers {
                     .fromIterable(wf.getTasks())
                     .compose(generate(wf))
                     .compose(execute())
-                    .compose(updateWorkFlowExecution())
-                    .takeUntil(Executor.Response::isFail);
+                    .takeUntil(Executor.Response::isFail)
+                    .compose(updateWorkFlowExecution());
         });
     }
 }

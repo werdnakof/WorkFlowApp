@@ -14,7 +14,6 @@ public class App {
             .compose(getWorkFlow())
             .compose(saveWorkFlow())
             .compose(start())
-            .subscribeOn(Schedulers.io())
             .blockingSubscribe();
     }
 }
