@@ -22,8 +22,8 @@ __Classes Descriptions:__
 * WorkFlowExecution - data object for storing executions
 * Executor 
 	* Start executing tasks e.g. call external api, save/read data to remote db  
-	* For demo purposes, if a Task name is "force-error", then return Failure status (see task2.json for example) In reality any tasks not executed properly should return Failure status
-* Transformers _(functions for converting data objects and/or side effects)_
+	* For demo purposes, if a Task name is "force-error", then return Failure status (see [task2.json](https://github.com/werdnakof/WorkFlowApp/blob/master/tasks/task2.json) for example) In reality any tasks not executed properly should return Failure status
+* Transformers _(functions for converting data objects or performing side effects)_
 	* getWorkFlow - convert an event to create WorkFlow
 	* saveWorkFlow - save a WorkFlow to db
 	* saveWorkFlowExecution - save WorkFlowExecution to db
@@ -35,6 +35,6 @@ __Classes Descriptions:__
 
 *__DB currently delays (sleeps) for 500 milli seconds for every save/update, to disable it either comment out Thread.sleep or set `addDelay` to false in DBService.java, and recompile a jar file__*
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbOTI0MzMxNTA4LC00NTM3MDAzNTAsLTE1OD
-AzNzA3NjksMTQzNjMzNjQ0M119
+eyJoaXN0b3J5IjpbLTcxMTIxMjQwNCwtNDUzNzAwMzUwLC0xNT
+gwMzcwNzY5LDE0MzYzMzY0NDNdfQ==
 -->
