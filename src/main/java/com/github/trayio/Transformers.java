@@ -10,17 +10,17 @@ import static com.github.trayio.WorkFlowExecution.State.ERROR;
 public class Transformers {
 
     public static ObservableTransformer<ConsoleEvent, WorkFlow> getWorkFlow() {
-        return eventObs -> eventObs.flatMap(event -> {
-            return Observable.fromCallable(() -> WorkFlowReader.get(event.getContent()))
-                    .filter(wf -> wf.getTasks().size() != 0)
-                    .subscribeOn(Schedulers.io());
-        });
+        return eventObs -> eventObs
+                .observeOn(Schedulers.io())
+                .flatMap(event -> Observable
+                        .fromCallable(() -> WorkFlowReader.get(event.getContent()))
+                        .filter(wf -> wf.getTasks().size() != 0));
     }
 
     public static ObservableTransformer<WorkFlow, WorkFlow> saveWorkFlow() {
         return workFlow -> workFlow
-                .doOnNext(wf -> DBService.getInstance().write(wf))
-                .subscribeOn(Schedulers.io());
+                .observeOn(Schedulers.io())
+                .doOnNext(wf -> DBService.getInstance().write(wf));
     }
 
     public static ObservableTransformer<Task, WorkFlowExecution> generate(WorkFlow workFlow) {
@@ -31,24 +31,23 @@ public class Transformers {
 
     public static ObservableTransformer<WorkFlowExecution, WorkFlowExecution> saveWorkFlowExecution() {
         return workFlowExecution -> workFlowExecution
-                .doOnNext(wfe -> DBService.getInstance().write(wfe))
-                .subscribeOn(Schedulers.io());
+                .observeOn(Schedulers.io())
+                .doOnNext(wfe -> DBService.getInstance().write(wfe));
     }
 
     public static ObservableTransformer<Executor.Response, Executor.Response> updateWorkFlowExecution() {
         return response -> response
+                .observeOn(Schedulers.io())
                 .doOnNext(re -> {
-                        WorkFlowExecution.State state = re.isSuccess() ? COMPLETED : ERROR;
-                        DBService.getInstance().updateStatus(re.workFlowExecutionId, state);
-                    }
-                )
-                .subscribeOn(Schedulers.io());
+                    WorkFlowExecution.State state = re.isSuccess() ? COMPLETED : ERROR;
+                    DBService.getInstance().updateStatus(re.workFlowExecutionId, state);
+                        }
+                );
     }
 
     public static ObservableTransformer<WorkFlowExecution, Executor.Response> execute() {
         return workFlowExecution -> workFlowExecution
-                .concatMap(Executor::submit)
-                .subscribeOn(Schedulers.io());
+                .concatMap(Executor::submit);
     }
 
     public static ObservableTransformer<WorkFlow, Executor.Response> start() {
