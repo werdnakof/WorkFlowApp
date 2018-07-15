@@ -23,6 +23,12 @@ public class Transformers {
                 .subscribeOn(Schedulers.io());
     }
 
+    public static ObservableTransformer<Task, WorkFlowExecution> generate(WorkFlow workFlow) {
+        return taskObs -> taskObs.concatMap(task -> WorkFlowExecution.create(workFlow, task)
+                .compose(saveWorkFlowExecution())
+        );
+    }
+
     public static ObservableTransformer<WorkFlowExecution, WorkFlowExecution> saveWorkFlowExecution() {
         return workFlowExecution -> workFlowExecution
                 .doOnNext(wfe -> DBService.getInstance().write(wfe))
@@ -46,12 +52,11 @@ public class Transformers {
     }
 
     public static ObservableTransformer<WorkFlow, Executor.Response> start() {
-        return workflowObs -> workflowObs.flatMap(workflow -> {
+        return workflowObs -> workflowObs.flatMap(wf -> {
             return Observable
-                    .fromIterable(workflow.getTasks())
-                    .concatMap(task -> WorkFlowExecution.create(workflow, task)
-                        .compose(saveWorkFlowExecution())
-                    ).compose(execute())
+                    .fromIterable(wf.getTasks())
+                    .compose(generate(wf))
+                    .compose(execute())
                     .compose(updateWorkFlowExecution())
                     .takeUntil(Executor.Response::isFail);
         });
