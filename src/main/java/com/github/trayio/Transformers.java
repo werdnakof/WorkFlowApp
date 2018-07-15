@@ -13,8 +13,7 @@ public class Transformers {
         return eventObs -> eventObs
                 .observeOn(Schedulers.io())
                 .flatMap(event -> Observable
-                        .fromCallable(() -> WorkFlowReader.get(event.getContent()))
-                        .filter(wf -> wf.getTasks().size() != 0));
+                        .fromCallable(() -> WorkFlowReader.get(event.getContent())));
     }
 
     public static ObservableTransformer<WorkFlow, WorkFlow> saveWorkFlow() {

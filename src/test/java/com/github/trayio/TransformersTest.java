@@ -5,6 +5,7 @@ import io.reactivex.observers.TestObserver;
 import org.junit.Before;
 import org.junit.Test;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import io.reactivex.Observable;
@@ -23,7 +24,7 @@ public class TransformersTest {
         task1 = new Task(0, "step0");
         task2 = new Task(1, "step1");
         steps = Arrays.asList(task1, task2);
-        wf = new WorkFlow("test", steps);
+        wf = new WorkFlow("test1", steps);
     }
 
     @Before
@@ -37,7 +38,19 @@ public class TransformersTest {
     public void test_getWorkFlow() {
         WorkFlow expected = wf;
 
-        TestObserver<WorkFlow> testObserver = Observable.just(new ConsoleEvent("test.json"))
+        TestObserver<WorkFlow> testObserver = Observable.just(new ConsoleEvent("./src/test/java/com/github/data/test1.json"))
+                .compose(getWorkFlow())
+                .test();
+
+        testObserver.awaitTerminalEvent();
+        testObserver.assertValue(expected);
+    }
+
+    @Test
+    public void test_getWorkFlow_withNoTasks() {
+        WorkFlow expected = new WorkFlow("test2", new ArrayList<>());
+
+        TestObserver<WorkFlow> testObserver = Observable.just(new ConsoleEvent("./src/test/java/com/github/data/test2.json"))
                 .compose(getWorkFlow())
                 .test();
 
