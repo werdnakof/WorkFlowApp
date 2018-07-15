@@ -52,8 +52,8 @@ public class Transformers {
                     .concatMap(task -> WorkFlowExecution.create(workflow, task)
                         .compose(saveWorkFlowExecution())
                     ).compose(execute())
-                    .takeUntil(Executor.Response::isFail)
-                    .compose(updateWorkFlowExecution());
+                    .compose(updateWorkFlowExecution())
+                    .takeUntil(Executor.Response::isFail);
         });
     }
 }
