@@ -9,6 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import io.reactivex.Observable;
+
+import static com.github.trayio.Executor.Status.FAILURE;
+import static com.github.trayio.Executor.Status.SUCCESS;
 import static com.github.trayio.Transformers.*;
 import static org.junit.Assert.assertEquals;
 
@@ -109,7 +112,7 @@ public class TransformersTest {
 
         testOb.awaitTerminalEvent();
 
-        Executor.Response expected1 = new Executor.Response(10, Executor.Status.SUCCESS);
+        Executor.Response expected1 = new Executor.Response(10, SUCCESS);
         Executor.Response expected2 = new Executor.Response(11, Executor.Status.FAILURE);
 
         testOb.assertValueCount(2)
@@ -125,7 +128,7 @@ public class TransformersTest {
         assertEquals(WorkFlowExecution.State.PENGING, DBService.getInstance().getWorkFlowExecution(0).getState());
 
         TestObserver<Executor.Response> testOb = Observable
-                .just(new Executor.Response(0, Executor.Status.SUCCESS))
+                .just(new Executor.Response(0, SUCCESS))
                 .compose(updateWorkFlowExecution())
                 .test();
 
@@ -140,5 +143,37 @@ public class TransformersTest {
 
         testOb.awaitTerminalEvent();
         assertEquals(WorkFlowExecution.State.ERROR, DBService.getInstance().getWorkFlowExecution(0).getState());
+    }
+
+    @Test
+    public void test_start_successResponse() {
+
+        TestObserver<Executor.Response> testOb = Observable
+                .just(wf)
+                .compose(start())
+                .test();
+
+        testOb.awaitTerminalEvent();
+
+        testOb.assertValueCount(2);
+        testOb.assertValues(
+                new Executor.Response(0, SUCCESS),
+                new Executor.Response(1, SUCCESS));
+    }
+
+    @Test
+    public void test_start_failResponse() {
+
+        wf = new WorkFlow("test1", Arrays.asList(new Task(0, "force-error"), task2, new Task(2, "something")));
+
+        TestObserver<Executor.Response> testOb = Observable
+                .just(wf)
+                .compose(start())
+                .test();
+
+        testOb.awaitTerminalEvent();
+
+        testOb.assertValueCount(1);
+        testOb.assertValues(new Executor.Response(0, FAILURE));
     }
 }
